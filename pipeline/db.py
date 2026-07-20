@@ -27,11 +27,17 @@ class ArticleRecord(Base):
     essential = Column(Boolean, nullable=False, default=False)
 
 
+_engine = None
+
+
 def get_engine():
-    database_url = os.environ.get("DATABASE_URL")
-    if not database_url:
-        raise RuntimeError("DATABASE_URL not set")
-    return create_engine(database_url)
+    global _engine
+    if _engine is None:
+        database_url = os.environ.get("DATABASE_URL")
+        if not database_url:
+            raise RuntimeError("DATABASE_URL not set")
+        _engine = create_engine(database_url)
+    return _engine
 
 
 def get_session_factory(engine=None):
