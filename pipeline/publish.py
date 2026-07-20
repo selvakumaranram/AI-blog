@@ -9,6 +9,11 @@ from pipeline.models import Article
 
 logger = logging.getLogger(__name__)
 
+# Confirmed against the live Supabase DB: psycopg 3 exposes the violated
+# constraint's name at IntegrityError.orig.diag.constraint_name. SQLAlchemy's
+# unique=True on ArticleRecord.canonical_url produces this constraint name.
+_CANONICAL_URL_CONSTRAINT = "articles_canonical_url_key"
+
 
 def generate_slug(title: str) -> str:
     text = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
@@ -60,8 +65,14 @@ def publish_article(
             session.add(record)
             try:
                 session.commit()
-            except IntegrityError:
+            except IntegrityError as exc:
                 session.rollback()
+                constraint_name = getattr(getattr(exc.orig, "diag", None), "constraint_name", None)
+                if constraint_name == _CANONICAL_URL_CONSTRAINT:
+                    logger.warning(
+                        "publish_failed_duplicate_canonical_url canonical_url=%s", canon
+                    )
+                    return None
                 continue
             article.slug = slug_attempt
             return slug_attempt
