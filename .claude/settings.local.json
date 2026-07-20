@@ -2,11 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(echo \"exit:$?\")",
-      "Bash(rm -f \"/d/AI-Blog/.claude/skills/SKILL.md\" \"/d/AI-Blog/run.txt\" && rmdir \"/d/AI-Blog/.claude-plugin\" 2>&1; echo \"---\"; find /d/AI-Blog -mindepth 0 -not -path '*/node_modules/*' | sort)"
+      "Bash(rm -f \"/d/AI-Blog/.claude/skills/SKILL.md\" \"/d/AI-Blog/run.txt\" && rmdir \"/d/AI-Blog/.claude-plugin\" 2>&1; echo \"---\"; find /d/AI-Blog -mindepth 0 -not -path '*/node_modules/*' | sort)",
+      "Bash(git -C \"D:\\\\AI-Blog\" status)",
+      "Bash(git -C \"D:\\\\AI-Blog\" log --oneline -20)"
     ],
     "additionalDirectories": [
       "D:\\AI-Blog\\.claude\\skills"
-    ]
+    ],
+     "defaultMode": "acceptEdits"
   },
   "enabledPlugins": {
     "claude-code-setup@claude-plugins-official": true
