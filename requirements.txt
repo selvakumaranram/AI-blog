@@ -4,3 +4,5 @@ google-genai>=1.0,<2
 python-dotenv>=1.0,<2
 PyYAML>=6.0,<7
 pytest>=8.0,<9
+sqlalchemy>=2.0,<3
+psycopg[binary]>=3.1,<4
