@@ -25,8 +25,8 @@ Both pages support category filters: `video-gen`, `image-gen`, `coding`, `resear
 ┌─────────────────────────── PIPELINE (Python, runs on GitHub Actions cron) ───────────────────────────┐
 │                                                                                                      │
 │  FETCHERS ──────────► DEDUPE ──────► SUMMARIZER ──────► RANKER ──────► PUBLISHER                     │
-│  - RSS feeds          (URL +         (LLM: 3-sentence   (LLM scores    (writes markdown /            │
-│  - Hacker News API     title          summary, "why      importance     Supabase rows,               │
+│  - RSS feeds          (URL +         (LLM: 3-sentence   (LLM scores    (writes rows to               │
+│  - Hacker News API     title          summary, "why      importance     Supabase Postgres,           │
 │  - GitHub trending     similarity)    it matters",       1–10)          triggers site rebuild)       │
 │  - arXiv API                          category tag)                                                  │
 │  - Reddit API                                                                                        │
@@ -60,7 +60,7 @@ Both pages support category filters: `video-gen`, `image-gen`, `coding`, `resear
 | Pipeline | Python 3.11+ | Scheduled script, no server needed |
 | Scheduler | GitHub Actions (cron, every 6h) | Free |
 | LLM | Claude API (Haiku-class) or Gemini free tier | Summaries + scoring, pennies/day |
-| Storage | Markdown files committed to repo (start) → Supabase Postgres free tier (later) | Zero cost, git history for free |
+| Storage | Supabase Postgres free tier — single `articles` table (via SQLAlchemy) | Zero cost, managed Postgres |
 | Frontend | Next.js (App Router) | React + server rendering for SEO |
 | Hosting | Vercel free tier | Zero cost, auto-deploy on push |
 | Styling | Tailwind CSS | Fast, consistent |
@@ -86,19 +86,18 @@ Both pages support category filters: `video-gen`, `image-gen`, `coding`, `resear
 │   ├── dedupe.py              # URL canonicalization + title similarity
 │   ├── summarize.py           # LLM: summary, why-it-matters, category
 │   ├── rank.py                # LLM importance score + source-coverage boost
-│   ├── publish.py             # Write markdown to content/ (or Supabase rows)
+│   ├── db.py                  # SQLAlchemy engine/session + ArticleRecord model (Postgres)
+│   ├── publish.py             # Persists articles to Postgres via db.py
 │   ├── models.py              # Article dataclass / schema
 │   ├── config.py              # Feed lists, thresholds, categories
 │   └── main.py                # Orchestrates: fetch → dedupe → summarize → rank → publish
-├── content/                   ← generated markdown articles (git-committed)
-│   └── YYYY-MM-DD/slug.md
 ├── site/                      ← Next.js app
 │   ├── app/
 │   │   ├── page.tsx           # Essential page
 │   │   ├── latest/page.tsx
 │   │   ├── category/[cat]/page.tsx
 │   │   └── post/[slug]/page.tsx
-│   └── lib/content.ts         # Reads content/ markdown
+│   └── lib/content.ts         # Reads articles from Postgres
 ├── distribution/              ← Phase 4: repurposing agents
 │   ├── linkedin.py
 │   ├── instagram.py
@@ -113,7 +112,7 @@ Both pages support category filters: `video-gen`, `image-gen`, `coding`, `resear
 
 ## Article schema
 
-Every article (markdown frontmatter or Supabase row) has:
+Every article (a row in the Postgres `articles` table) has:
 
 ```yaml
 title: string            # Original headline, shortened if needed
@@ -165,7 +164,7 @@ essential: bool          # importance >= 7 OR sources_count >= 3
 
 1. **Start Phase 1.** Build `pipeline/` in the order listed above. Small, testable modules — one fetcher at a time, each runnable standalone (`python -m pipeline.fetchers.rss`).
 2. **Prove quality before quantity.** After the first end-to-end run, stop and show sample output for human review before adding more sources.
-3. **Keep it free.** No paid services, no servers, no databases until Phase 3 makes Supabase worth it.
+3. **Keep it free.** No paid services, no persistent servers — Supabase Postgres (free tier) is already in use for storage as of Phase 1.
 4. **Never plagiarize.** Summaries must be original wording. Always store and display `source_url`. If an LLM summary looks like a close paraphrase of the source, regenerate it.
 5. **Update this README.** When a phase item is completed, tick its checkbox in the roadmap so the next session knows the true state.
 
@@ -183,8 +182,8 @@ essential: bool          # importance >= 7 OR sources_count >= 3
 ```bash
 # Pipeline
 pip install -r requirements.txt
-cp .env.example .env       # add your API keys
-python -m pipeline.main    # full run → writes to content/
+cp .env.example .env       # set GEMINI_API_KEY and DATABASE_URL (Postgres, postgresql+psycopg:// scheme); GITHUB_TOKEN optional
+python -m pipeline.main    # full run → persists new articles to Postgres
 
 # Site
 cd site
