@@ -134,7 +134,7 @@ summary: string          # 3 sentences, original wording
 why_it_matters: string   # 1–2 sentences
 importance: int          # 1–10 (LLM-scored)
 sources_count: int       # How many feeds covered this story (dedupe merge count)
-essential: bool          # importance >= 7 OR sources_count >= 3 (interim: sources_count only, until Phase 3 adds importance)
+essential: bool          # importance >= 7 OR sources_count >= 3
 ```
 
 ---
@@ -154,9 +154,9 @@ essential: bool          # importance >= 7 OR sources_count >= 3 (interim: sourc
   - [x] Reads articles from Postgres
   - [ ] Deploy to Vercel
 - [ ] **Phase 3 — Full automation (Weeks 5–6).**
-  - [ ] GitHub Actions cron every 6 hours
-  - [ ] Ranker agent: importance scoring → Essential page selection
-  - [ ] Auto-commit content → Vercel auto-rebuild
+  - [x] GitHub Actions cron every 6 hours
+  - [x] Ranker agent: importance scoring → Essential page selection
+  - [ ] ~~Auto-commit content → Vercel auto-rebuild~~ — not needed: the site reads Postgres directly with 15-minute ISR (`revalidate = 900`), so there's no commit-triggered rebuild step. Once deployed, Vercel serves fresh content automatically as ISR revalidates.
 - [ ] **Phase 4 — Distribution.**
   - [ ] LinkedIn draft generator, Instagram caption generator
   - [ ] YouTube script generator: daily "Top 5 AI updates" (hook, segments, outro)
