@@ -8,7 +8,7 @@ export default function CategoryNav() {
         <Link
           key={category}
           href={`/category/${category}`}
-          className="px-3 py-1 rounded-full border border-gray-300 hover:bg-gray-100"
+          className="px-3 py-1 rounded-full border border-blue-200 text-blue-700 hover:bg-blue-50"
         >
           {category}
         </Link>

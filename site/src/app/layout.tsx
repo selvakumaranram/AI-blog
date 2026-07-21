@@ -29,14 +29,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header className="border-b border-gray-200 p-4 flex gap-4 items-center">
-          <Link href="/" className="font-bold text-lg">
+        <header className="border-b-2 border-blue-600 bg-white p-4 flex gap-4 items-center shadow-sm">
+          <Link href="/" className="font-bold text-lg text-blue-700">
             AI Pulse
           </Link>
-          <Link href="/" className="text-sm">
+          <Link href="/" className="text-sm text-slate-600 hover:text-blue-600">
             Essential
           </Link>
-          <Link href="/latest" className="text-sm">
+          <Link href="/latest" className="text-sm text-slate-600 hover:text-blue-600">
             Latest
           </Link>
         </header>

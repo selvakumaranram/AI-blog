@@ -15,12 +15,12 @@ export default async function PostPage({
   }
   return (
     <article className="space-y-4">
-      <div className="text-xs text-gray-500 uppercase font-semibold">
+      <div className="text-xs text-blue-600 uppercase font-semibold">
         {article.category}
       </div>
       <h1 className="text-2xl font-bold">{article.title}</h1>
-      <p className="text-gray-700">{article.summary}</p>
-      <p className="text-gray-700">
+      <p className="text-slate-700">{article.summary}</p>
+      <p className="text-slate-700">
         <strong>Why it matters:</strong> {article.whyItMatters}
       </p>
       <a
