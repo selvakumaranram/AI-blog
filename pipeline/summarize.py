@@ -80,7 +80,7 @@ def _validate(data: dict) -> None:
 
 def summarize_article(article: Article, client: genai.Client | None = None) -> Article:
     client = client or _get_client()
-    model = os.environ.get("GEMINI_MODEL", config.GEMINI_MODEL_DEFAULT)
+    model = os.environ.get("GEMINI_MODEL") or config.GEMINI_MODEL_DEFAULT
     prompt = build_prompt(article)
     last_error: Exception | None = None
     for attempt in range(2):
