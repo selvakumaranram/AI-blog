@@ -92,12 +92,20 @@ Both pages support category filters: `video-gen`, `image-gen`, `coding`, `resear
 │   ├── config.py              # Feed lists, thresholds, categories
 │   └── main.py                # Orchestrates: fetch → dedupe → summarize → rank → publish
 ├── site/                      ← Next.js app
-│   ├── app/
-│   │   ├── page.tsx           # Essential page
-│   │   ├── latest/page.tsx
-│   │   ├── category/[cat]/page.tsx
-│   │   └── post/[slug]/page.tsx
-│   └── lib/content.ts         # Reads articles from Postgres
+│   └── src/
+│       ├── app/
+│       │   ├── page.tsx                    # Essential page
+│       │   ├── layout.tsx                  # Shared layout
+│       │   ├── latest/page.tsx
+│       │   ├── category/[category]/page.tsx
+│       │   └── post/[slug]/page.tsx
+│       ├── components/
+│       │   ├── ArticleCard.tsx
+│       │   └── CategoryNav.tsx
+│       └── lib/
+│           ├── db.ts                       # Postgres connection (postgres.js)
+│           ├── types.ts                    # Article/Category types
+│           └── articles.ts                 # Query functions — reads articles from Postgres
 ├── distribution/              ← Phase 4: repurposing agents
 │   ├── linkedin.py
 │   ├── instagram.py
@@ -126,7 +134,7 @@ summary: string          # 3 sentences, original wording
 why_it_matters: string   # 1–2 sentences
 importance: int          # 1–10 (LLM-scored)
 sources_count: int       # How many feeds covered this story (dedupe merge count)
-essential: bool          # importance >= 7 OR sources_count >= 3
+essential: bool          # importance >= 7 OR sources_count >= 3 (interim: sources_count only, until Phase 3 adds importance)
 ```
 
 ---
@@ -134,16 +142,16 @@ essential: bool          # importance >= 7 OR sources_count >= 3
 ## Phased roadmap & current status
 
 - [x] **Phase 0 — Planning.** Concept, stack, and phases decided. Claude Code skills built.
-- [ ] **Phase 1 — Pipeline MVP (Weeks 1–2).** ← **WE ARE HERE — START NEXT**
-  - [ ] `models.py` + `config.py` with 5–10 RSS feeds
-  - [ ] Fetchers: RSS + Hacker News + GitHub trending (arXiv/Reddit/YouTube can wait)
-  - [ ] Dedupe by canonical URL + fuzzy title match
-  - [ ] Summarizer: one LLM call per article → summary, why-it-matters, category
-  - [ ] Output markdown files to `content/`
-  - [ ] Run manually; verify output quality on real data
+- [x] **Phase 1 — Pipeline MVP (Weeks 1–2).**
+  - [x] `models.py` + `config.py` with 5–10 RSS feeds
+  - [x] Fetchers: RSS + Hacker News + GitHub trending (arXiv/Reddit/YouTube can wait)
+  - [x] Dedupe by canonical URL + fuzzy title match
+  - [x] Summarizer: one LLM call per article → summary, why-it-matters, category
+  - [x] Persists articles to Postgres (markdown output was retired)
+  - [x] Run manually; verify output quality on real data
 - [ ] **Phase 2 — Website (Weeks 3–4).**
-  - [ ] Next.js app: Essential, Latest, category, post pages
-  - [ ] Reads markdown from `content/`
+  - [x] Next.js app: Essential, Latest, category, post pages
+  - [x] Reads articles from Postgres
   - [ ] Deploy to Vercel
 - [ ] **Phase 3 — Full automation (Weeks 5–6).**
   - [ ] GitHub Actions cron every 6 hours
