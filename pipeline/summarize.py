@@ -17,8 +17,9 @@ RESPONSE_SCHEMA = {
         "summary": {"type": "string"},
         "why_it_matters": {"type": "string"},
         "category": {"type": "string", "enum": [c.value for c in Category]},
+        "importance": {"type": "integer"},
     },
-    "required": ["summary", "why_it_matters", "category"],
+    "required": ["summary", "why_it_matters", "category", "importance"],
 }
 
 PROMPT_TEMPLATE = """You write for "AI Pulse", an AI news blog that aggregates and summarizes AI news \
@@ -33,6 +34,11 @@ Return a JSON object with exactly these fields:
 phrases from the excerpt.
 - "why_it_matters": 1-2 sentences on why an AI-interested reader should care.
 - "category": exactly one of {categories}.
+- "importance": an integer 1-10 rating how significant this news is to an AI-interested reader, using \
+this rubric: 1-3 = niche or minor (small tool update, incremental release), 4-6 = notable (meaningful \
+feature, funding round, solid research result), 7-8 = significant (major product launch, notable model \
+release, widely-relevant industry shift), 9-10 = major or breaking (industry-defining announcement, \
+landmark research, major acquisition).
 
 Do not invent facts beyond what the title/excerpt imply. Be concise and factual, not promotional."""
 
@@ -67,6 +73,9 @@ def _validate(data: dict) -> None:
         raise ValueError("summary exceeds 3 sentences")
     if len(SENTENCE_BOUNDARY.findall(data["why_it_matters"])) > 2:
         raise ValueError("why_it_matters exceeds 2 sentences")
+    importance = data.get("importance")
+    if not isinstance(importance, int) or isinstance(importance, bool) or not (1 <= importance <= 10):
+        raise ValueError(f"importance out of range: {importance!r}")
 
 
 def summarize_article(article: Article, client: genai.Client | None = None) -> Article:
@@ -90,6 +99,7 @@ def summarize_article(article: Article, client: genai.Client | None = None) -> A
             article.summary = data["summary"].strip()
             article.why_it_matters = data["why_it_matters"].strip()
             article.category = Category(data["category"])
+            article.importance = data["importance"]
             return article
         except Exception as e:
             last_error = e
@@ -113,3 +123,4 @@ if __name__ == "__main__":
     print(f"category={result.category}")
     print(f"summary={result.summary}")
     print(f"why_it_matters={result.why_it_matters}")
+    print(f"importance={result.importance}")
