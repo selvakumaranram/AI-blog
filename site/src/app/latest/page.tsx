@@ -10,11 +10,15 @@ export default async function LatestPage() {
     <div className="space-y-6">
       <CategoryNav />
       <h1 className="text-2xl font-bold">Latest</h1>
-      <div className="space-y-4">
-        {articles.map((article) => (
-          <ArticleCard key={article.slug} article={article} />
-        ))}
-      </div>
+      {articles.length === 0 ? (
+        <p className="text-sm text-gray-500">No articles yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {articles.map((article) => (
+            <ArticleCard key={article.slug} article={article} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
