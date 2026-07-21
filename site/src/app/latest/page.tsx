@@ -1,15 +1,15 @@
 import ArticleCard from "@/components/ArticleCard";
 import CategoryNav from "@/components/CategoryNav";
-import { getEssentialArticles } from "@/lib/articles";
+import { getLatestArticles } from "@/lib/articles";
 
 export const revalidate = 900;
 
-export default async function EssentialPage() {
-  const articles = await getEssentialArticles();
+export default async function LatestPage() {
+  const articles = await getLatestArticles();
   return (
     <div className="space-y-6">
       <CategoryNav />
-      <h1 className="text-2xl font-bold">Essential</h1>
+      <h1 className="text-2xl font-bold">Latest</h1>
       <div className="space-y-4">
         {articles.map((article) => (
           <ArticleCard key={article.slug} article={article} />
