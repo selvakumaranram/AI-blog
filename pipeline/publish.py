@@ -41,7 +41,7 @@ def _record_from_article(article: Article, slug: str, canonical_url: str) -> Art
         why_it_matters=article.why_it_matters,
         importance=article.importance,
         sources_count=article.sources_count,
-        essential=article.essential,
+        essential=article.sources_count >= 3,
     )
 
 
