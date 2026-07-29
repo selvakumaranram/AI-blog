@@ -22,7 +22,11 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt
+      - name: Skip pipeline when DATABASE_URL secret is missing
+        if: ${{ secrets.DATABASE_URL == '' }}
+        run: echo "DATABASE_URL secret is not configured; skipping pipeline run."
       - run: python -m pipeline.main
+        if: ${{ secrets.DATABASE_URL != '' }}
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
