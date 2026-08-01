@@ -2,7 +2,7 @@ import logging
 import time
 
 from pipeline import config, dedupe, publish, summarize
-from pipeline.fetchers import github_trending, hackernews, rss
+from pipeline.fetchers import github_trending, hackernews, rss, youtube
 from pipeline.summarize import SummarizeError
 
 logger = logging.getLogger(__name__)
@@ -21,6 +21,7 @@ def run() -> None:
         _safe_fetch(rss.fetch_all_rss, "rss")
         + _safe_fetch(hackernews.fetch_hackernews, "hackernews")
         + _safe_fetch(github_trending.fetch_github_trending, "github_trending")
+        + _safe_fetch(youtube.fetch_all_youtube, "youtube")
     )
     deduped = dedupe.deduplicate(fetched)
     already_published = publish.load_published_canonical_urls()

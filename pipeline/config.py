@@ -24,6 +24,15 @@ RSS_FEEDS: list[dict[str, str]] = [
 RSS_LOOKBACK_DAYS = 3  # some feeds (e.g. OpenAI's) return their entire historical
 # archive rather than just recent posts — bound volume the same way HN/GitHub are bounded.
 
+YOUTUBE_CHANNELS: list[dict[str, str]] = [
+    {"name": "Fireship", "channel_id": "UCsBjURrPoezykLs9EqgamOA"},
+    {"name": "Matt Wolfe", "channel_id": "UChpleBmo18P08aKCIgti38g"},
+    {"name": "AI Explained", "channel_id": "UCNJ1Ymd5yFuUPtn21xtRbbw"},
+    {"name": "OpenAI", "channel_id": "UCXZCJLdBC09xxGZ6gcdrc6A"},
+    {"name": "Anthropic", "channel_id": "UCrDwWp7EBBv4NwvScIpBDOA"},
+]
+YOUTUBE_LOOKBACK_DAYS = 3  # matches RSS_LOOKBACK_DAYS
+
 HN_SEARCH_URL = "https://hn.algolia.com/api/v1/search_by_date"
 HN_KEYWORDS = ["AI", "GPT", "LLM", "OpenAI", "Anthropic", "Gemini", "machine learning"]
 HN_MIN_POINTS = 50

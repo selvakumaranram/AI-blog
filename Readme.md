@@ -144,7 +144,7 @@ essential: bool          # importance >= 7 OR sources_count >= 3
 - [x] **Phase 0 — Planning.** Concept, stack, and phases decided. Claude Code skills built.
 - [x] **Phase 1 — Pipeline MVP (Weeks 1–2).**
   - [x] `models.py` + `config.py` with 5–10 RSS feeds
-  - [x] Fetchers: RSS + Hacker News + GitHub trending (arXiv/Reddit/YouTube can wait)
+  - [x] Fetchers: RSS + Hacker News + GitHub trending + YouTube channels (arXiv/Reddit can wait)
   - [x] Dedupe by canonical URL + fuzzy title match
   - [x] Summarizer: one LLM call per article → summary, why-it-matters, category
   - [x] Persists articles to Postgres (markdown output was retired)
